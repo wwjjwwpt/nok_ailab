@@ -1,0 +1,35 @@
+{
+  "pages": [
+    "pages/login/index",
+    "pages/dashboard/index",
+    "pages/profile/index",
+    "pages/market/research/index",
+    "pages/market/research/list",
+    "pages/market/research/create",
+    "pages/market/research/edit",
+    "pages/market/research/detail"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#001529",
+    "navigationBarTitleText": "NOK Nexus",
+    "navigationBarTextStyle": "white"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#1890ff",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/dashboard/index",
+        "text": "工作台"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

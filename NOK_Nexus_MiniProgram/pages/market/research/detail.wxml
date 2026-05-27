@@ -1,0 +1,109 @@
+<!--调研详情页面-->
+<view class="detail-container">
+  <!-- 顶部导航栏 -->
+  <view class="nav-header">
+    <view class="back-btn" bindtap="goBack">
+      <text class="icon">‹</text>
+    </view>
+    <text class="page-title">调研详情</text>
+    <view class="action-btn" bindtap="showActions">
+      <text class="icon">⋮</text>
+    </view>
+  </view>
+
+  <!-- 内容区域 -->
+  <view class="detail-content" wx:if="{{research}}">
+    <!-- 头部信息 -->
+    <view class="detail-header">
+      <view class="header-icon">
+        <text class="icon-char">📊</text>
+      </view>
+      <view class="header-text">
+        <text class="header-title">{{research.product_name}}</text>
+        <view class="status-badge">
+          <text class="status-text">正常</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 主信息卡片 -->
+    <view class="main-card">
+      <view class="info-group">
+        <view class="info-row">
+          <view class="info-label">
+            <text class="label-dot"></text>
+            <text>调研城市</text>
+          </view>
+          <text class="info-value">{{research.city}}</text>
+        </view>
+        <view class="info-divider"></view>
+        <view class="info-row">
+          <view class="info-label">
+            <text class="label-dot"></text>
+            <text>厂商名称</text>
+          </view>
+          <text class="info-value">{{research.manufacturer}}</text>
+        </view>
+        <view class="info-divider"></view>
+        <view class="info-row">
+          <view class="info-label">
+            <text class="label-dot"></text>
+            <text>商品名称</text>
+          </view>
+          <text class="info-value">{{research.product_name}}</text>
+        </view>
+        <view class="info-divider"></view>
+        <view class="info-row">
+          <view class="info-label">
+            <text class="label-dot"></text>
+            <text>调研价格</text>
+          </view>
+          <text class="info-value highlight">¥{{research.price}}</text>
+        </view>
+        <view class="info-divider"></view>
+        <view class="info-row">
+          <view class="info-label">
+            <text class="label-dot"></text>
+            <text>调研日期</text>
+          </view>
+          <text class="info-value">{{research.research_date}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 备注信息 -->
+    <view class="remark-card" wx:if="{{research.remark}}">
+      <view class="remark-header">
+        <text class="remark-icon">📝</text>
+        <text class="remark-title">备注信息</text>
+      </view>
+      <text class="remark-text">{{research.remark}}</text>
+    </view>
+
+    <!-- 审计信息 -->
+    <view class="audit-card">
+      <view class="audit-header">
+        <text class="audit-icon">🔍</text>
+        <text class="audit-title">审计信息</text>
+      </view>
+      <view class="audit-row">
+        <text class="audit-label">创建人</text>
+        <text class="audit-value">{{research.creator || '未知'}}</text>
+      </view>
+      <view class="audit-row">
+        <text class="audit-label">创建时间</text>
+        <text class="audit-value">{{research.created_at}}</text>
+      </view>
+      <view class="audit-row">
+        <text class="audit-label">更新时间</text>
+        <text class="audit-value">{{research.updated_at}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:else>
+    <text class="empty-icon">❌</text>
+    <text class="empty-text">调研记录不存在</text>
+  </view>
+</view>

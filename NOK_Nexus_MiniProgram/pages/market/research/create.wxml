@@ -1,0 +1,153 @@
+<!--创建调研页面-->
+<view class="create-container">
+  <!-- 顶部导航栏 -->
+  <view class="nav-header">
+    <view class="back-btn" bindtap="goBack">
+      <text class="icon">‹</text>
+    </view>
+    <text class="page-title">创建调研</text>
+    <view class="placeholder"></view>
+  </view>
+
+  <!-- 表单区域 -->
+  <view class="form-section">
+    <!-- 信息卡片头部 -->
+    <view class="form-header">
+      <view class="header-icon">
+        <text class="icon-char">📋</text>
+      </view>
+      <view class="header-text">
+        <text class="header-title">填写调研信息</text>
+        <text class="header-desc">请准确填写市场调研数据</text>
+      </view>
+    </view>
+
+    <!-- 表单卡片 -->
+    <view class="form-card">
+      <!-- 城市 -->
+      <view class="form-group">
+        <view class="input-label">
+          <text class="label-dot"></text>
+          <text class="label-text">调研城市</text>
+        </view>
+        <picker mode="region" value="{{formData.region}}" bindchange="onRegionChange">
+          <view class="city-selector">
+            <text class="city-text" wx:if="{{formData.city}}">{{formData.city}}</text>
+            <text class="city-placeholder" wx:else>请选择城市</text>
+            <text class="selector-arrow">›</text>
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-divider"></view>
+
+      <!-- 厂商 -->
+      <view class="form-group">
+        <view class="input-label">
+          <text class="label-dot"></text>
+          <text class="label-text">厂商名称</text>
+        </view>
+        <view class="input-wrapper">
+          <text class="input-prefix">🏢</text>
+          <input
+            class="main-input"
+            placeholder="请输入厂商名称"
+            value="{{formData.manufacturer}}"
+            bindinput="onManufacturerInput"
+          />
+        </view>
+      </view>
+
+      <view class="form-divider"></view>
+
+      <!-- 商品 -->
+      <view class="form-group">
+        <view class="input-label">
+          <text class="label-dot"></text>
+          <text class="label-text">商品名称</text>
+        </view>
+        <view class="input-wrapper">
+          <text class="input-prefix">📱</text>
+          <input
+            class="main-input"
+            placeholder="请输入商品名称"
+            value="{{formData.product_name}}"
+            bindinput="onProductNameInput"
+          />
+        </view>
+      </view>
+
+      <view class="form-divider"></view>
+
+      <!-- 价格 -->
+      <view class="form-group">
+        <view class="input-label">
+          <text class="label-dot"></text>
+          <text class="label-text">调研价格</text>
+        </view>
+        <view class="input-wrapper">
+          <text class="input-prefix">¥</text>
+          <input
+            class="main-input"
+            type="digit"
+            placeholder="请输入价格"
+            value="{{formData.price}}"
+            bindinput="onPriceInput"
+          />
+        </view>
+      </view>
+    </view>
+
+    <!-- 其他信息卡片 -->
+    <view class="form-card">
+      <!-- 调研日期 -->
+      <view class="form-group">
+        <view class="input-label">
+          <text class="label-dot"></text>
+          <text class="label-text">调研日期</text>
+        </view>
+        <view class="date-picker" bindtap="chooseDate">
+          <text class="date-text">{{formData.research_date || '选择调研日期'}}</text>
+          <text class="picker-arrow">›</text>
+        </view>
+      </view>
+
+      <view class="form-divider"></view>
+
+      <!-- 备注 -->
+      <view class="form-group">
+        <view class="input-label">
+          <text class="label-dot"></text>
+          <text class="label-text">备注信息</text>
+          <text class="label-optional">（选填）</text>
+        </view>
+        <textarea
+          class="remark-textarea"
+          placeholder="补充说明或其他详细信息"
+          value="{{formData.remark}}"
+          bindinput="onRemarkInput"
+          maxlength="500"
+          auto-height
+        />
+      </view>
+    </view>
+
+    <!-- 信息提示 -->
+    <view class="info-tip">
+      <view class="tip-left">
+        <view class="tip-icon-wrapper">
+          <text class="tip-icon">!</text>
+        </view>
+        <text class="tip-text">创建人和创建时间将自动记录，无需手动填写</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 提交按钮 -->
+  <view class="submit-section">
+    <button class="submit-btn" bindtap="submitForm" loading="{{submitting}}">
+      <text class="btn-icon">✓</text>
+      <text class="btn-text">确认创建</text>
+    </button>
+  </view>
+</view>

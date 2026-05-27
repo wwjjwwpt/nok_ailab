@@ -1,0 +1,42 @@
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.coverage
+htmlcov/
+venv/
+.venv/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+
+# Logs and runtime artifacts
+logs/
+*.log
+*.pid
+
+# Archives and generated deploy bundles
+*.tar
+*.tar.gz
+*.zip
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Local tool state
+.claude/
+.deploy-secrets/
+NOK_Nexus_MiniProgram/project.private.config.json

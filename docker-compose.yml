@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 数据库 (本地开发用，生产环境使用阿里云 RDS)
+  postgres:
+    image: postgres:16-alpine
+    container_name: nok_postgres
+    profiles:
+      - local
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nok_ailab
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - nok_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis 缓存 (本地开发用，生产环境使用阿里云 Redis)
+  redis:
+    image: redis:7-alpine
+    container_name: nok_redis
+    profiles:
+      - local
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - nok_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 后端服务
+  backend:
+    build:
+      context: ./NOK_Nexus
+      dockerfile: Dockerfile
+    container_name: nok_backend
+    env_file:
+      - ./NOK_Nexus/.env
+    ports:
+      - "8000:8000"
+    networks:
+      - nok_network
+    volumes:
+      - ./NOK_Nexus/logs:/app/logs
+
+  # 前端服务
+  frontend:
+    build:
+      context: ./NOK_Nexus_Web
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
+    container_name: nok_frontend
+    env_file:
+      - ./NOK_Nexus_Web/.env.local
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - nok_network
+
+networks:
+  nok_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:

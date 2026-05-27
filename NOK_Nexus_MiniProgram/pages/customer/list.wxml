@@ -1,0 +1,5 @@
+<view class="placeholder-page">
+  <text class="icon">👥</text>
+  <text class="text">客户管理</text>
+  <text class="hint">功能开发中...</text>
+</view>

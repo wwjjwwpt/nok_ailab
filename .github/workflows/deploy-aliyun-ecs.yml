@@ -1,0 +1,95 @@
+name: Deploy to Aliyun ECS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-aliyun-ecs
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare environment files
+        env:
+          APP_ENV: ${{ secrets.APP_ENV }}
+          WEB_ENV: ${{ secrets.WEB_ENV }}
+        run: |
+          set -euo pipefail
+          mkdir -p .deploy-secrets
+          printf '%s\n' "$APP_ENV" > .deploy-secrets/backend.env
+          printf '%s\n' "$WEB_ENV" > .deploy-secrets/frontend.env
+
+      - name: Upload release to ECS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.ECS_HOST }}
+          username: ${{ secrets.ECS_USER }}
+          key: ${{ secrets.ECS_SSH_KEY }}
+          port: ${{ secrets.ECS_PORT || 22 }}
+          source: "NOK_Nexus,NOK_Nexus_Web,NOK_Nexus_MiniProgram,infra,docs,docker-compose.yml,README.md,README_PERMISSION.md,.gitignore,.deploy-secrets"
+          target: "/tmp/nok_ailab_release/${{ github.sha }}"
+          rm: true
+
+      - name: Deploy on ECS
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        with:
+          host: ${{ secrets.ECS_HOST }}
+          username: ${{ secrets.ECS_USER }}
+          key: ${{ secrets.ECS_SSH_KEY }}
+          port: ${{ secrets.ECS_PORT || 22 }}
+          envs: DEPLOY_PATH
+          script_stop: true
+          script: |
+            set -euo pipefail
+
+            APP_DIR="${DEPLOY_PATH:-/opt/nok_ailab}"
+            RELEASE_DIR="/tmp/nok_ailab_release/${{ github.sha }}"
+
+            if ! command -v docker >/dev/null 2>&1; then
+              if [ "$(id -u)" -eq 0 ]; then
+                curl -fsSL https://get.docker.com | sh
+              else
+                curl -fsSL https://get.docker.com | sudo sh
+              fi
+            fi
+
+            mkdir -p "$APP_DIR"
+            rm -rf \
+              "$APP_DIR/NOK_Nexus" \
+              "$APP_DIR/NOK_Nexus_Web" \
+              "$APP_DIR/NOK_Nexus_MiniProgram" \
+              "$APP_DIR/infra" \
+              "$APP_DIR/docs" \
+              "$APP_DIR/docker-compose.yml" \
+              "$APP_DIR/README.md" \
+              "$APP_DIR/README_PERMISSION.md" \
+              "$APP_DIR/.gitignore"
+            cp -a "$RELEASE_DIR"/. "$APP_DIR"/
+
+            cd "$APP_DIR"
+            mkdir -p NOK_Nexus/logs
+            mv .deploy-secrets/backend.env NOK_Nexus/.env
+            mv .deploy-secrets/frontend.env NOK_Nexus_Web/.env.local
+            rm -rf .deploy-secrets
+            export NEXT_PUBLIC_API_BASE_URL="$(grep -E '^NEXT_PUBLIC_API_BASE_URL=' NOK_Nexus_Web/.env.local | tail -n 1 | cut -d '=' -f 2-)"
+
+            if docker compose version >/dev/null 2>&1; then
+              COMPOSE="docker compose"
+            else
+              COMPOSE="docker-compose"
+            fi
+
+            $COMPOSE up -d --build --remove-orphans
+            $COMPOSE ps

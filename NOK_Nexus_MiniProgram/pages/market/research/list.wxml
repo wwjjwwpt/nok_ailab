@@ -1,0 +1,106 @@
+<!--市场调研列表页-->
+<view class="research-list-container">
+  <!-- 顶部导航栏 -->
+  <view class="nav-header">
+    <view class="back-btn" bindtap="goBack">
+      <text class="icon">‹</text>
+    </view>
+    <text class="page-title">市场调研</text>
+    <view class="placeholder"></view>
+  </view>
+
+  <!-- 统计卡片 -->
+  <view class="stats-card">
+    <view class="stat-item">
+      <text class="stat-value">{{stats.total}}</text>
+      <text class="stat-label">共 {{stats.total}} 条记录</text>
+    </view>
+  </view>
+
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <view class="search-input">
+      <text class="search-icon">🔍</text>
+      <input
+        class="search-field"
+        placeholder="搜索城市或厂商"
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+        confirm-type="search"
+        bindconfirm="doSearch"
+      />
+    </view>
+    <view class="search-btn" bindtap="doSearch">
+      <text>搜索</text>
+    </view>
+  </view>
+
+  <!-- 调研列表 -->
+  <view class="list-section">
+    <view class="list-header">
+      <text class="list-title">调研记录</text>
+      <text class="list-count">共 {{researchList.length}} 条</text>
+    </view>
+
+    <!-- 列表内容 -->
+    <view class="research-list" wx:if="{{researchList.length > 0}}">
+      <view
+        class="research-item"
+        wx:for="{{researchList}}"
+        wx:key="id"
+        bindtap="viewDetail"
+        data-id="{{item.id}}"
+      >
+        <view class="item-header">
+          <view class="item-city">
+            <text class="city-icon">📍</text>
+            <text class="city-name">{{item.city}}</text>
+          </view>
+          <view class="item-date">{{item.research_date}}</view>
+        </view>
+
+        <view class="item-body">
+          <view class="item-row">
+            <text class="item-label">厂商：</text>
+            <text class="item-value">{{item.manufacturer}}</text>
+          </view>
+          <view class="item-row">
+            <text class="item-label">商品：</text>
+            <text class="item-value">{{item.product_name}}</text>
+          </view>
+          <view class="item-row">
+            <text class="item-label">价格：</text>
+            <text class="item-price">¥{{item.price}}</text>
+          </view>
+        </view>
+
+        <view class="item-footer">
+          <text class="item-time">更新于 {{item.updated_at}}</text>
+          <view class="item-actions" bindtap="showActions" data-id="{{item.id}}">
+            <text class="action-icon">⋮</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:else>
+      <view class="empty-icon">📝</view>
+      <text class="empty-text">暂无调研记录</text>
+      <text class="empty-hint">点击下方按钮创建第一条调研</text>
+    </view>
+
+    <!-- 加载更多 -->
+    <view class="load-more" wx:if="{{hasMore}}">
+      <text>加载中...</text>
+    </view>
+    <view class="no-more" wx:if="{{!hasMore && researchList.length > 0}}">
+      <text>没有更多了</text>
+    </view>
+  </view>
+
+  <!-- 悬浮创建按钮 -->
+  <view class="fab-button" bindtap="createResearch">
+    <text class="fab-icon">＋</text>
+  </view>
+</view>

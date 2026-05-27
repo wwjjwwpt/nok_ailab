@@ -1,0 +1,50 @@
+<!--工作台首页-->
+<view class="dashboard-container">
+  <!-- 顶部用户信息区 -->
+  <view class="header-section">
+    <view class="header-content">
+      <view class="user-info">
+        <text class="greeting">你好，</text>
+        <text class="nickname">{{userInfo.nickname || userInfo.username}}</text>
+        <text class="subtitle">今天也是充满活力的一天</text>
+      </view>
+      <view class="header-actions">
+        <view class="icon-btn" bindtap="goToProfile">
+          <text class="icon">⚙️</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 主要功能卡片 -->
+  <view class="main-feature">
+    <view class="feature-card" bindtap="navigateTo" data-url="/pages/market/research/list">
+      <view class="feature-bg"></view>
+      <view class="feature-content">
+        <view class="feature-icon">
+          <text class="icon-char">📈</text>
+        </view>
+        <view class="feature-text">
+          <text class="feature-title">市场调研</text>
+          <text class="feature-desc">市场数据调研与分析</text>
+        </view>
+      </view>
+      <view class="feature-arrow">›</view>
+    </view>
+  </view>
+
+  <!-- 快捷操作 -->
+  <view class="quick-section">
+    <text class="section-title">快捷操作</text>
+    <view class="quick-action-card" bindtap="createResearch">
+      <view class="action-icon-wrapper">
+        <text class="action-icon-char">+</text>
+      </view>
+      <view class="action-info">
+        <text class="action-title">创建调研</text>
+        <text class="action-desc">快速发起新的市场调研</text>
+      </view>
+      <view class="action-arrow">›</view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,50 @@
+<!--登录页面-->
+<view class="login-container">
+  <!-- 顶部 Logo 区域 -->
+  <view class="header">
+    <view class="logo">
+      <svg width="80" height="80" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+    </view>
+    <text class="title">NOK Nexus</text>
+    <text class="subtitle">企业智能工作台</text>
+  </view>
+
+  <!-- 登录表单区域 -->
+  <view class="login-form">
+    <view class="form-inputs">
+      <input
+        class="input"
+        type="text"
+        placeholder="请输入用户名"
+        value="{{username}}"
+        bindinput="onUsernameInput"
+      />
+      <input
+        class="input"
+        type="password"
+        placeholder="请输入密码"
+        value="{{password}}"
+        bindinput="onPasswordInput"
+        bindconfirm="handleLogin"
+      />
+      <button
+        class="login-btn"
+        bindtap="handleLogin"
+        hover-class="button-hover"
+        loading="{{loading}}"
+      >
+        登录
+      </button>
+    </view>
+  </view>
+
+  <!-- 底部说明 -->
+  <view class="footer">
+    <text class="footer-text">登录即代表您同意</text>
+    <text class="link">《用户协议》</text>
+    <text class="footer-text">和</text>
+    <text class="link">《隐私政策》</text>
+  </view>
+</view>

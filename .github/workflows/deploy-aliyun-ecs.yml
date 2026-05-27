@@ -57,11 +57,23 @@ jobs:
             APP_DIR="${DEPLOY_PATH:-/opt/nok_ailab}"
             RELEASE_DIR="/tmp/nok_ailab_release/${{ github.sha }}"
 
+            # 安装 Docker (支持阿里云 Linux)
             if ! command -v docker >/dev/null 2>&1; then
-              if [ "$(id -u)" -eq 0 ]; then
-                curl -fsSL https://get.docker.com | sh
+              # 检测系统类型
+              if [ -f /etc/os-release ]; then
+                . /etc/os-release
+              fi
+
+              # 阿里云 Linux 使用 yum 安装
+              if [ "${ID}" = "alinux" ] || [ "${ID}" = "centos" ] || [ "${ID}" = "rhel" ]; then
+                yum install -y yum-utils
+                yum-config-manager --add-repo https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+                yum install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+                systemctl enable docker
+                systemctl start docker
               else
-                curl -fsSL https://get.docker.com | sudo sh
+                # 其他系统使用官方脚本
+                curl -fsSL https://get.docker.com | sh
               fi
             fi
 

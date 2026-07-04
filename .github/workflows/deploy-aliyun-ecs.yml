@@ -34,7 +34,7 @@ jobs:
         with:
           host: ${{ secrets.ECS_HOST }}
           username: ${{ secrets.ECS_USERNAME || secrets.ECS_USER }}
-          password: ${{ secrets.ECS_PASSWORD }}
+          password: ${{ secrets.ECS_PASSWORD || secrets.ECS_POSSWORD }}
           key: ${{ secrets.ECS_SSH_KEY }}
           port: ${{ secrets.ECS_PORT || 22 }}
           source: "NOK_Nexus,NOK_Nexus_Web,NOK_Nexus_MiniProgram,infra,docs,docker-compose.yml,README.md,README_PERMISSION.md,.gitignore,.deploy-secrets"
@@ -48,7 +48,7 @@ jobs:
         with:
           host: ${{ secrets.ECS_HOST }}
           username: ${{ secrets.ECS_USERNAME || secrets.ECS_USER }}
-          password: ${{ secrets.ECS_PASSWORD }}
+          password: ${{ secrets.ECS_PASSWORD || secrets.ECS_POSSWORD }}
           key: ${{ secrets.ECS_SSH_KEY }}
           port: ${{ secrets.ECS_PORT || 22 }}
           envs: DEPLOY_PATH

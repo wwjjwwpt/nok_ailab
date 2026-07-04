@@ -93,7 +93,15 @@ jobs:
             EOF
             systemctl daemon-reload || true
             systemctl enable docker
-            systemctl restart docker
+            if ! systemctl restart docker; then
+              echo "Docker restart failed with mirror config; showing diagnostics and retrying with default daemon config."
+              cat /etc/docker/daemon.json || true
+              systemctl status docker.service --no-pager || true
+              journalctl -u docker.service -n 120 --no-pager || true
+              mv /etc/docker/daemon.json /etc/docker/daemon.json.disabled || true
+              systemctl daemon-reload || true
+              systemctl restart docker
+            fi
             docker info
 
             mkdir -p "$APP_DIR"

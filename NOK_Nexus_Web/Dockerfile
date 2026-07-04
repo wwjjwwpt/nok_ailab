@@ -14,6 +14,7 @@ RUN npm ci
 
 # 复制源码
 COPY . .
+RUN mkdir -p public
 
 # 构建生产版本
 RUN npm run build

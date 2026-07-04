@@ -82,15 +82,7 @@ jobs:
             # Configure Docker Hub mirrors for Aliyun ECS, where direct Docker Hub
             # metadata requests often time out during image builds.
             mkdir -p /etc/docker
-            cat > /etc/docker/daemon.json <<'EOF'
-            {
-              "registry-mirrors": [
-                "https://b9pmyelo2ap8sz4a.mirror.aliyuncs.com",
-                "https://docker.m.daocloud.io",
-                "https://mirror.ccs.tencentyun.com"
-              ]
-            }
-            EOF
+            printf '%s\n' '{"registry-mirrors":["https://b9pmyelo2ap8sz4a.mirror.aliyuncs.com","https://docker.m.daocloud.io","https://mirror.ccs.tencentyun.com"]}' > /etc/docker/daemon.json
             systemctl daemon-reload || true
             systemctl enable docker
             if ! systemctl restart docker; then

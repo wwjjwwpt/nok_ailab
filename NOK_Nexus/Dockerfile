@@ -3,12 +3,13 @@ FROM python:3.11-slim as backend-builder
 
 WORKDIR /app
 
-# 使用国内 pip 镜像
-RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+# 使用阿里云 pip 镜像，失败时回退到官方 PyPI
+RUN pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
 
 # 安装依赖
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt \
+    || pip install --no-cache-dir -i https://pypi.org/simple -r requirements.txt
 
 # 复制源码
 COPY . .
@@ -18,8 +19,8 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# 使用国内 pip 镜像
-RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+# 使用阿里云 pip 镜像
+RUN pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
 
 # 安装运行时依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \

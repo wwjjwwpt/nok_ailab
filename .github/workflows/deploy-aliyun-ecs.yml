@@ -77,6 +77,23 @@ jobs:
               fi
             fi
 
+            # Configure Docker Hub mirrors for Aliyun ECS, where direct Docker Hub
+            # metadata requests often time out during image builds.
+            mkdir -p /etc/docker
+            cat > /etc/docker/daemon.json <<'EOF'
+            {
+              "registry-mirrors": [
+                "https://b9pmyelo2ap8sz4a.mirror.aliyuncs.com",
+                "https://docker.m.daocloud.io",
+                "https://mirror.ccs.tencentyun.com"
+              ]
+            }
+            EOF
+            systemctl daemon-reload || true
+            systemctl enable docker
+            systemctl restart docker
+            docker info
+
             mkdir -p "$APP_DIR"
             rm -rf \
               "$APP_DIR/NOK_Nexus" \
@@ -95,7 +112,11 @@ jobs:
             mv .deploy-secrets/backend.env NOK_Nexus/.env
             mv .deploy-secrets/frontend.env NOK_Nexus_Web/.env.local
             rm -rf .deploy-secrets
-            export NEXT_PUBLIC_API_BASE_URL="$(grep -E '^NEXT_PUBLIC_API_BASE_URL=' NOK_Nexus_Web/.env.local | tail -n 1 | cut -d '=' -f 2-)"
+            export NEXT_PUBLIC_API_BASE_URL="$(grep -E '^(NEXT_PUBLIC_API_BASE_URL|API_BASE_URL)=' NOK_Nexus_Web/.env.local | tail -n 1 | cut -d '=' -f 2-)"
+            if [ -z "${NEXT_PUBLIC_API_BASE_URL}" ]; then
+              export NEXT_PUBLIC_API_BASE_URL="http://${{ secrets.ECS_HOST }}:8000"
+            fi
+            printf 'NEXT_PUBLIC_API_BASE_URL=%s\n' "$NEXT_PUBLIC_API_BASE_URL"
 
             if docker compose version >/dev/null 2>&1; then
               COMPOSE="docker compose"
@@ -103,5 +124,14 @@ jobs:
               COMPOSE="docker-compose"
             fi
 
-            $COMPOSE up -d --build --remove-orphans
+            for attempt in 1 2 3; do
+              if $COMPOSE up -d --build --remove-orphans; then
+                break
+              fi
+              if [ "$attempt" = "3" ]; then
+                exit 1
+              fi
+              docker builder prune -af || true
+              sleep $((attempt * 20))
+            done
             $COMPOSE ps

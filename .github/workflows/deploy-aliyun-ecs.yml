@@ -53,6 +53,7 @@ jobs:
           port: ${{ secrets.ECS_PORT || 22 }}
           envs: DEPLOY_PATH
           script_stop: true
+          command_timeout: 30m
           script: |
             set -euo pipefail
 

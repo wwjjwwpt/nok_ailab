@@ -22,11 +22,6 @@ WORKDIR /app
 # 使用阿里云 pip 镜像
 RUN pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
 
-# 安装运行时依赖
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpq5 \
-    && rm -rf /var/lib/apt/lists/*
-
 COPY --from=backend-builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY --from=backend-builder /usr/local/bin /usr/local/bin
 COPY . .

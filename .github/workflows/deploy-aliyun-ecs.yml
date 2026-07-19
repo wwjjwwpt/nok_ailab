@@ -35,7 +35,7 @@ jobs:
         working-directory: NOK_Nexus_Web
         run: |
           docker build \
-            --build-arg NEXT_PUBLIC_API_BASE_URL=http://116.62.162.240:8000 \
+            --build-arg NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000 \
             -t nok-ailab-frontend-ci \
             .
 
@@ -146,10 +146,11 @@ jobs:
             mv .deploy-secrets/backend.env NOK_Nexus/.env
             mv .deploy-secrets/frontend.env NOK_Nexus_Web/.env.local
             rm -rf .deploy-secrets
-            export NEXT_PUBLIC_API_BASE_URL="$(grep -E '^(NEXT_PUBLIC_API_BASE_URL|API_BASE_URL)=' NOK_Nexus_Web/.env.local | tail -n 1 | cut -d '=' -f 2-)"
-            if [ -z "${NEXT_PUBLIC_API_BASE_URL}" ]; then
-              export NEXT_PUBLIC_API_BASE_URL="http://${{ secrets.ECS_HOST }}:8000"
-            fi
+            export NEXT_PUBLIC_API_BASE_URL="http://${{ secrets.ECS_HOST }}:8000"
+            tmp_env="$(mktemp)"
+            grep -Ev '^(NEXT_PUBLIC_API_BASE_URL|API_BASE_URL)=' NOK_Nexus_Web/.env.local > "$tmp_env" || true
+            mv "$tmp_env" NOK_Nexus_Web/.env.local
+            printf '\nNEXT_PUBLIC_API_BASE_URL=%s\n' "$NEXT_PUBLIC_API_BASE_URL" >> NOK_Nexus_Web/.env.local
             printf 'NEXT_PUBLIC_API_BASE_URL=%s\n' "$NEXT_PUBLIC_API_BASE_URL"
 
             if docker compose version >/dev/null 2>&1; then

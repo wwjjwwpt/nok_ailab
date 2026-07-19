@@ -1,7 +1,9 @@
 """
 应用配置模块
 """
+import json
 from pydantic_settings import BaseSettings
+from pydantic import field_validator
 from functools import lru_cache
 from typing import Optional
 
@@ -44,13 +46,16 @@ class Settings(BaseSettings):
     BCRYPT_ROUNDS: int = 12
 
     # CORS 配置
-    CORS_ORIGINS: list = [
+    CORS_ORIGINS: list[str] = [
         "http://localhost:3000",
         "http://localhost:3001",
         "http://localhost:8080",
         "http://127.0.0.1:3000",
         "http://127.0.0.1:3001",
     ]
+    CORS_ORIGIN_REGEX: Optional[str] = (
+        r"^https?://(localhost|127\.0\.0\.1|(\d{1,3}\.){3}\d{1,3})(:\d+)?$"
+    )
 
     # 日志配置
     LOG_LEVEL: str = "INFO"
@@ -77,6 +82,20 @@ class Settings(BaseSettings):
         env_file = ".env"
         env_file_encoding = "utf-8"
         case_sensitive = True
+
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def parse_cors_origins(cls, value):
+        if isinstance(value, list):
+            return value
+        if not value:
+            return []
+
+        value = value.strip()
+        if value.startswith("["):
+            return json.loads(value)
+
+        return [origin.strip() for origin in value.split(",") if origin.strip()]
 
 
 @lru_cache()

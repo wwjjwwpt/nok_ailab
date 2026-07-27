@@ -46,7 +46,14 @@ class MetricTests(unittest.TestCase):
         self.assertEqual(self.result.summary["高库存产品数"], 1)
         self.assertFalse(self.result.alerts.empty)
 
+    def test_monthly_sales_are_linked_to_each_product(self) -> None:
+        growth = self._product("A-01")
+        monthly = self.result.monthly_sales.loc[
+            self.result.monthly_sales["_源数据行"] == growth["_源数据行"]
+        ].iloc[0]
+        self.assertEqual(monthly["2025-10"], 100)
+        self.assertEqual(monthly["2026-03"], 200)
+
 
 if __name__ == "__main__":
     unittest.main()
-

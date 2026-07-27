@@ -95,7 +95,13 @@ def export_analysis(result: AnalysisResult, destination: str | Path) -> Path:
     output.parent.mkdir(parents=True, exist_ok=True)
 
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
-        result.products.to_excel(writer, sheet_name="产品指标", index=False)
+        product_export = result.products.drop(columns=["_源数据行"], errors="ignore")
+        product_export.to_excel(writer, sheet_name="产品指标", index=False)
+        identity = result.products[["_源数据行", "品号", "品名"]]
+        monthly_export = identity.merge(
+            result.monthly_sales, on="_源数据行", how="left"
+        ).drop(columns=["_源数据行"], errors="ignore")
+        monthly_export.to_excel(writer, sheet_name="月度销量", index=False)
         result.alerts.to_excel(writer, sheet_name="风险预警", index=False)
         result.source.data.to_excel(writer, sheet_name="原始数据", index=False)
         mappings = [
@@ -173,7 +179,15 @@ def export_analysis(result: AnalysisResult, destination: str | Path) -> Path:
             for col_index, value in enumerate(values, start=1):
                 summary_sheet.cell(row_index, col_index, _safe_value(value))
 
-        for sheet_name in ("产品指标", "风险预警", "原始数据", "字段映射", "指标说明", "数据质量"):
+        for sheet_name in (
+            "产品指标",
+            "月度销量",
+            "风险预警",
+            "原始数据",
+            "字段映射",
+            "指标说明",
+            "数据质量",
+        ):
             sheet = workbook[sheet_name]
             sheet.freeze_panes = "A2"
             sheet.auto_filter.ref = sheet.dimensions

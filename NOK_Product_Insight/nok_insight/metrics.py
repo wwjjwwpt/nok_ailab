@@ -33,6 +33,7 @@ METRIC_DEFINITIONS = [
 class AnalysisResult:
     source: ExcelLoadResult
     products: pd.DataFrame
+    monthly_sales: pd.DataFrame
     summary: dict[str, float | int | str]
     alerts: pd.DataFrame
     quality_messages: list[str] = field(default_factory=list)
@@ -169,6 +170,7 @@ def analyze(source: ExcelLoadResult, config: AnalysisConfig | None = None) -> An
     raw = source.data.copy()
     mapping = source.columns
     products = pd.DataFrame(index=raw.index)
+    products["_源数据行"] = raw.index.astype(int)
 
     product_id_col = mapping.get("product_id")
     product_name_col = mapping.get("product_name")
@@ -191,6 +193,13 @@ def analyze(source: ExcelLoadResult, config: AnalysisConfig | None = None) -> An
         monthly = pd.DataFrame(index=raw.index)
         derived_total = pd.Series(np.nan, index=raw.index)
         derived_average = pd.Series(np.nan, index=raw.index)
+
+    monthly_output = monthly.copy()
+    if not monthly_output.empty:
+        monthly_output.columns = [
+            month.strftime("%Y-%m") for month, _ in mapping.monthly_sales
+        ]
+    monthly_output.insert(0, "_源数据行", raw.index.astype(int))
 
     total_sales = _numeric(raw, mapping.get("total_sales_qty"))
     products["总销售数量"] = total_sales.where(total_sales.notna(), derived_total)
@@ -339,6 +348,7 @@ def analyze(source: ExcelLoadResult, config: AnalysisConfig | None = None) -> An
     return AnalysisResult(
         source=source,
         products=products,
+        monthly_sales=monthly_output.reset_index(drop=True),
         summary=summary,
         alerts=_build_alerts(products, config),
         quality_messages=quality,

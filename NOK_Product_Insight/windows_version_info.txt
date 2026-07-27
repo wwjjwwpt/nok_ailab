@@ -1,0 +1,33 @@
+# UTF-8
+VSVersionInfo(
+  ffi=FixedFileInfo(
+    filevers=(1, 1, 0, 0),
+    prodvers=(1, 1, 0, 0),
+    mask=0x3f,
+    flags=0x0,
+    OS=0x40004,
+    fileType=0x1,
+    subtype=0x0,
+    date=(0, 0)
+  ),
+  kids=[
+    StringFileInfo(
+      [
+        StringTable(
+          "080404B0",
+          [
+            StringStruct("CompanyName", "NOK"),
+            StringStruct("FileDescription", "NOK 产品经营分析"),
+            StringStruct("FileVersion", "1.1.0"),
+            StringStruct("InternalName", "NOK_Product_Insight"),
+            StringStruct("LegalCopyright", "Copyright (C) 2026 NOK"),
+            StringStruct("OriginalFilename", "NOK_Product_Insight.exe"),
+            StringStruct("ProductName", "NOK 产品经营分析"),
+            StringStruct("ProductVersion", "1.1.0")
+          ]
+        )
+      ]
+    ),
+    VarFileInfo([VarStruct("Translation", [2052, 1200])])
+  ]
+)

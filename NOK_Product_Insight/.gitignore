@@ -1,9 +1,10 @@
 __pycache__/
 *.py[cod]
 .venv/
+.venv-windows/
 build/
 dist/
+release/
 *.spec.bak
 .pytest_cache/
 analysis_output/
-

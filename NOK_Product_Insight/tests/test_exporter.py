@@ -25,7 +25,7 @@ class ExporterTests(unittest.TestCase):
             try:
                 self.assertEqual(
                     workbook.sheetnames,
-                    ["管理摘要", "产品指标", "风险预警", "原始数据", "字段映射", "指标说明", "数据质量"],
+                    ["管理摘要", "产品指标", "月度销量", "风险预警", "原始数据", "字段映射", "指标说明", "数据质量"],
                 )
             finally:
                 workbook.close()

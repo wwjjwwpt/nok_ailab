@@ -70,6 +70,8 @@ def parse_month_column(label: object) -> date | None:
     compact = re.sub(r"\s+", "", raw)
     if not any(token in compact.lower() for token in ("销售", "销量", "出货", "sales")):
         return None
+    if any(token in compact for token in ("总销售", "销售总", "合计", "累计", "月平均", "月均")):
+        return None
     patterns = (
         r"(?P<year>20\d{2})年(?P<month>1[0-2]|0?[1-9])月",
         r"(?P<year>20\d{2})[-/.](?P<month>1[0-2]|0?[1-9])",
@@ -112,6 +114,8 @@ def map_columns(columns: Iterable[object]) -> ColumnMap:
             used.add(exact)
 
     for name in names:
+        if name in used:
+            continue
         parsed = parse_month_column(name)
         if parsed:
             result.monthly_sales.append((parsed, name))
@@ -130,4 +134,3 @@ def header_score(values: Iterable[object]) -> float:
     nonempty = sum(bool(label and label.lower() != "nan") for label in labels)
     identity_bonus = 5 if mapping.get("product_id") or mapping.get("product_name") else 0
     return recognized * 2 + month_count * 1.5 + identity_bonus + min(nonempty, 20) * 0.05
-

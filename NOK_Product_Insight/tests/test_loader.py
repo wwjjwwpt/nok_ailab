@@ -5,6 +5,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from nok_insight.loader import load_excel
+from nok_insight.columns import parse_month_column
 
 from .helpers import create_sample_workbook
 
@@ -21,7 +22,11 @@ class LoaderTests(unittest.TestCase):
             self.assertEqual(len(loaded.columns.monthly_sales), 6)
             self.assertEqual(len(loaded.data), 2)
 
+    def test_total_period_column_is_not_treated_as_a_month(self) -> None:
+        self.assertIsNone(
+            parse_month_column("2025年4月1日-2026年3月31日总销售数量")
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
-

@@ -14,6 +14,7 @@ from nok_insight.metrics import analyze
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="NOK 产品经营分析")
     parser.add_argument("file", nargs="?", help="启动界面后自动分析的 Excel 文件")
+    parser.add_argument("--open", dest="open_file", metavar="FILE", help="启动界面并自动分析指定 Excel")
     parser.add_argument("--analyze", metavar="FILE", help="无界面分析指定 Excel")
     parser.add_argument("--output", metavar="XLSX", help="无界面模式导出结果")
     parser.add_argument("--target-months", type=float, default=7.7, help="缺少目标字段时采用的目标月数")
@@ -42,7 +43,12 @@ def main() -> int:
 
     from nok_insight.ui import run_app
 
-    run_app(args.file)
+    # Finder/LaunchServices may append a positional launch token to frozen apps.
+    # The packaged desktop app should always start idle and let the user choose
+    # the workbook from the native file picker. CLI source runs can still pass
+    # a positional workbook for development convenience.
+    initial_file = args.open_file or (None if getattr(sys, "frozen", False) else args.file)
+    run_app(initial_file)
     return 0
 
 
@@ -52,4 +58,3 @@ if __name__ == "__main__":
     except Exception as exc:
         print(f"错误：{exc}", file=sys.stderr)
         raise SystemExit(1)
-

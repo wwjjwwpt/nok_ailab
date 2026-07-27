@@ -35,10 +35,11 @@ exe = EXE(
     strip=False,
     upx=True,
     console=False,
+    icon="assets/app_icon.ico",
+    version="windows_version_info.txt",
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
 )
-
